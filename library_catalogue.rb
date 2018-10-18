@@ -17,6 +17,10 @@ class LibraryCatalogue
     self.book_collection.detect {|book| book.title == book_title}
   end
 
+  def get_book_by_ISBN(iSBN)
+    self.book_collection.detect {|book| book.iSBN == iSBN}
+  end
+
   def check_out(book_title)
     book = self.get_book(book_title)
     if !book
@@ -30,13 +34,37 @@ class LibraryCatalogue
     end
   end
 
+  def check_out_by_ISBN(iSBN)
+    book = self.get_book_by_ISBN(iSBN)
+    if !book
+      puts "Sorry, that book does not exist in this library."
+    elsif book.is_checked_out
+      self.book_already_checked_out(book)
+    else
+      book.is_checked_out = true
+      book.day_checked_out = self.current_day
+      puts "You just checked out #{book.title}. It is due on day #{book.day_checked_out + self.length_checkout_period}."
+    end
+  end
+
   def return_book(book_title)
     book = self.get_book(book_title)
     days_late = self.current_day - (book.day_checked_out + self.length_checkout_period)
     if days_late > 0
-      puts "You owe the library $#{self.initial_late_fee + self.fee_per_late_day * days_late} because your book is #{days_late} days overdue."
+      puts "You owe the library $#{self.initial_late_fee + self.fee_per_late_day * days_late} because #{book.title} is #{days_late} days overdue."
     else
-      puts "Book returned. Thank you."
+      puts "#{book.title} returned. Thank you."
+    end
+    book.is_checked_out = false
+  end
+
+  def return_book_by_ISBN(iSBN)
+    book = self.get_book_by_ISBN(iSBN)
+    days_late = self.current_day - (book.day_checked_out + self.length_checkout_period)
+    if days_late > 0
+      puts "You owe the library $#{self.initial_late_fee + self.fee_per_late_day * days_late} because #{book.title} is #{days_late} days overdue."
+    else
+      puts "#{book.title} returned. Thank you."
     end
     book.is_checked_out = false
   end

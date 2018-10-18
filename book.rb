@@ -8,6 +8,4 @@ class Book
     @is_checked_out = false
     @day_checked_out = -1
   end
-
-
 end
